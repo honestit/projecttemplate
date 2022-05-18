@@ -14,7 +14,7 @@ public class CreateBookForm {
 
     @NotBlank @Length(min = 3)
     private String title;
-    private String pages;
+    private int pages;
     private Long authorId;
     private String authorFirstName;
     private String authorLastName;
