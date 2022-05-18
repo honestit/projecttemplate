@@ -1,0 +1,21 @@
+# Create new book with new author
+POST localhost:8081/create-book
+Content-Type: application/x-www-form-urlencoded
+
+title=abc&pages=100&authorFirstName=Jan&authorLastName=Kowalski
+
+###
+
+# Create new book with existing author
+POST localhost:8081/create-book
+Content-Type: application/x-www-form-urlencoded
+
+title=dwadwa&authorId=1
+
+###
+
+# Explode on non existing author
+POST localhost:8081/create-book
+Content-Type: application/x-www-form-urlencoded
+
+title=beee&authorId=3
