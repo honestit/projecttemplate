@@ -28,6 +28,9 @@ public class BookEntity {
     private int pages;
 
     @ManyToOne
+    private UserEntity user;
+
+    @ManyToOne
     private AuthorEntity mainAuthor;
 
     @ManyToMany
