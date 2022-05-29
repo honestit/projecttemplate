@@ -1,9 +1,11 @@
 package com.github.honestit.projecttemplate.service;
 
 import com.github.honestit.projecttemplate.model.AuthorEntity;
+import com.github.honestit.projecttemplate.model.BookEntity;
 import com.github.honestit.projecttemplate.model.CategoryEntity;
 import com.github.honestit.projecttemplate.model.UserEntity;
 import com.github.honestit.projecttemplate.repository.AuthorRepository;
+import com.github.honestit.projecttemplate.repository.BookRepository;
 import com.github.honestit.projecttemplate.repository.CategoryRepository;
 import com.github.honestit.projecttemplate.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -25,9 +27,10 @@ public class TestDataLoader {
     private final PasswordEncoder passwordEncoder;
     private final AuthorRepository authorRepository;
     private final CategoryRepository categoryRepository;
+    private final BookRepository bookRepository;
 
     @EventListener
-    @Transactional
+//    @Transactional
     public void loadData(ContextRefreshedEvent event) {
         log.debug("Loading data ...");
         userRepository.save(UserEntity.builder()
@@ -49,6 +52,18 @@ public class TestDataLoader {
         categoryRepository.save(CategoryEntity.builder()
                         .name("Drama")
                 .build());
+        bookRepository.save(BookEntity.builder()
+                        .title("abc")
+                        .pages(100)
+                .build());
+
+        CategoryEntity fantasyCategory = categoryRepository.getById(1L);
+        BookEntity abcBook = bookRepository.getById(1L);
+        abcBook.getCategories().add(fantasyCategory);
+        bookRepository.save(abcBook);
+
+        fantasyCategory = categoryRepository.getById(1L);
+//        log.debug("Książki: {}", fantasyCategory.getBooks());
         log.debug("Data saved");
     }
 }

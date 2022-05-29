@@ -9,6 +9,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.PositiveOrZero;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -34,5 +35,6 @@ public class BookEntity extends BaseEntity {
     private List<AuthorEntity> authors;
 
     @ManyToMany
-    private List<CategoryEntity> categories;
+    @Builder.Default
+    private List<CategoryEntity> categories = new ArrayList<>();
 }

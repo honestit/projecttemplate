@@ -5,8 +5,11 @@ import lombok.experimental.SuperBuilder;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "categories")
@@ -20,4 +23,8 @@ public class CategoryEntity extends BaseEntity {
     private String name;
 
     private String description;
+
+    @ManyToMany(mappedBy = "categories")
+    @Builder.Default
+    private List<BookEntity> books = new ArrayList<>();
 }
