@@ -1,20 +1,20 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="s" uri="http://www.springframework.org/tags" %>
 <%@ page isELIgnored="false" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Create book</title>
+    <title><s:message code="pages.create-book.title"/></title>
 </head>
 <body>
 <spring:form modelAttribute="createBookForm">
     <div>
-        <label>Title: <spring:input path="title"/><spring:errors path="title"
-                                                                 element="span"/></label>
+        <label><s:message code="pages.create-book.form.title"/>: <spring:input path="title"/><spring:errors path="title" element="span"/></label>
     </div>
     <div>
-        <label>Pages: <spring:input path="pages" type="number" min="0" max="1000"
+        <label><s:message code="pages.create-book.form.pages"/>: <spring:input path="pages" type="number" min="0" max="1000"
                                     step="1"/><spring:errors path="pages" element="span"/></label>
     </div>
     <div>
