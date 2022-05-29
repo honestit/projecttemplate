@@ -32,4 +32,7 @@ public class BookEntity extends BaseEntity {
 
     @ManyToMany
     private List<AuthorEntity> authors;
+
+    @ManyToMany
+    private List<CategoryEntity> categories;
 }

@@ -1,13 +1,15 @@
 package com.github.honestit.projecttemplate.service;
 
-import com.github.honestit.projecttemplate.controller.mvc.BookBaseData;
+import com.github.honestit.projecttemplate.controller.mvc.AuthorItem;
+import com.github.honestit.projecttemplate.controller.mvc.CategoryItem;
 import com.github.honestit.projecttemplate.controller.mvc.CreateBookForm;
 import com.github.honestit.projecttemplate.model.AuthorEntity;
 import com.github.honestit.projecttemplate.model.BookEntity;
 import com.github.honestit.projecttemplate.repository.AuthorRepository;
 import com.github.honestit.projecttemplate.repository.BookRepository;
+import com.github.honestit.projecttemplate.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,22 +17,31 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
+@RequiredArgsConstructor @Slf4j
 public class DefaultBookService implements BookService {
 
     private final AuthorRepository authorRepository;
     private final BookRepository bookRepository;
+    private final CategoryRepository categoryRepository;
 
     @Override
-    public List<BookBaseData> getAllUserBooks() {
-        // Pobieramy nazwę aktualnie zalogowanego użytkownika (aktualnie = związanego z requestem, który przetwarzamy).
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        return bookRepository.findAllByUser_username(username).stream()
-                .map(bookEntity -> BookBaseData.builder()
-                        .id(bookEntity.getId())
-                        .title(bookEntity.getTitle())
-                        .author(bookEntity.getMainAuthor().getFirstName() +
-                                " " + bookEntity.getMainAuthor().getLastName())
+    public List<AuthorItem> getAllAuthors() {
+        return authorRepository.findAll().stream()
+                .map(entity -> AuthorItem.builder()
+                        .id(entity.getId())
+                        .firstName(entity.getFirstName())
+                        .lastName(entity.getLastName())
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<CategoryItem> getAllCategories() {
+        return categoryRepository.findAll().stream()
+                .map(entity -> CategoryItem.builder()
+                        .id(entity.getId())
+                        .name(entity.getName())
+                        .description(entity.getDescription())
                         .build())
                 .collect(Collectors.toList());
     }
@@ -38,22 +49,29 @@ public class DefaultBookService implements BookService {
     @Override
     @Transactional
     public void createBook(CreateBookForm createBookForm) {
-        AuthorEntity mainAuthor;
-        if (createBookForm.getAuthorId() != null) {
-            mainAuthor = authorRepository.getById(createBookForm.getAuthorId());
-        } else {
-            mainAuthor = authorRepository
-                    .findByFirstNameAndLastName(createBookForm.getAuthorFirstName(),
-                            createBookForm.getAuthorLastName())
-                    .orElseGet(() -> authorRepository.save(AuthorEntity.builder()
-                            .firstName(createBookForm.getAuthorFirstName())
-                            .lastName(createBookForm.getAuthorLastName())
-                            .build()));
-        }
+        log.debug("Creating book base on: {}", createBookForm);
         bookRepository.save(BookEntity.builder()
                 .title(createBookForm.getTitle())
                 .pages(createBookForm.getPages())
-                .mainAuthor(mainAuthor)
+                .mainAuthor(getOrCreateAuthor(createBookForm.getMainAuthor()))
+                .authors(createBookForm.getAuthors().stream()
+                        .map(this::getOrCreateAuthor)
+                        .collect(Collectors.toList()))
+                .categories(createBookForm.getCategories().stream()
+                        .map(CategoryItem::getId)
+                        .map(categoryRepository::getById)
+                        .collect(Collectors.toList()))
                 .build());
+    }
+
+    private AuthorEntity getOrCreateAuthor(AuthorItem authorItem) {
+        if (authorItem.getId() != null) {
+            return authorRepository.getById(authorItem.getId());
+        }
+        return authorRepository.findByFirstNameAndLastName(authorItem.getFirstName(), authorItem.getLastName())
+                .orElseGet(() -> authorRepository.save(AuthorEntity.builder()
+                        .firstName(authorItem.getFirstName())
+                        .lastName(authorItem.getLastName())
+                        .build()));
     }
 }
