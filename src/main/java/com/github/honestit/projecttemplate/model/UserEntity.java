@@ -1,25 +1,26 @@
 package com.github.honestit.projecttemplate.model;
 
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
 
 @Entity
 @Table(name = "users")
-@Getter @Setter @ToString(exclude = "password") @EqualsAndHashCode(of = "id")
-@NoArgsConstructor @AllArgsConstructor @Builder
-public class UserEntity {
+@Getter @Setter @ToString(exclude = "password", callSuper = true)
+@NoArgsConstructor @AllArgsConstructor @SuperBuilder
+public class UserEntity extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
+    @NotBlank
+    @Column(unique = true)
     private String username;
-    private String password;
-    private String role;
 
-//    Wariant kiedy jeden użytkownik może mieć więcej niż jedną rolę.
-//    @ElementCollection
-//    @CollectionTable(name = "users_roles")
-//    private List<String> roles;
+    @NotBlank
+    private String password;
+
+    @NotBlank
+    private String role;
 }

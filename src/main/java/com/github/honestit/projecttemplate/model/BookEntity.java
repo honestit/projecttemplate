@@ -1,10 +1,13 @@
 package com.github.honestit.projecttemplate.model;
 
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
@@ -12,23 +15,17 @@ import java.util.List;
 @Table(name = "books")
 @Getter
 @Setter
-@ToString(exclude = {"authors"})
-@EqualsAndHashCode(of = "id")
+@ToString(exclude = {"authors"}, callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class BookEntity {
+@SuperBuilder
+public class BookEntity extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
     @NotBlank
     private String title;
+
     @PositiveOrZero
     private int pages;
-
-    @ManyToOne
-    private UserEntity user;
 
     @ManyToOne
     private AuthorEntity mainAuthor;
